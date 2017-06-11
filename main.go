@@ -16,6 +16,19 @@ var (
 var tpl = template.Must(template.ParseGlob("templates/*"))
 
 
+func main() {
+	http.HandleFunc("/", HomePage)
+	http.HandleFunc("/about", AboutPage)
+	http.HandleFunc("/contacts", ContactsPage)
+	http.HandleFunc("/news/", NewsList)
+	http.HandleFunc("/news/show/", NewsFull)
+
+	http.Handle("/favicon.ico", http.NotFoundHandler())
+
+	fmt.Println("Listen on port: 8080")
+	http.ListenAndServe(":8080", nil)
+}
+
 func HomePage(w http.ResponseWriter, r *http.Request) {
 	//var menu []json.Menu
 	//ReadJSON(&menu)
@@ -42,12 +55,6 @@ func NewsFull(w http.ResponseWriter, r *http.Request) {
 	tpl.ExecuteTemplate(w, "news_full.tmpl", "44444")
 }
 
-
-const (
-	NewsFile = "pkg/config/news.json"
-	MenuFile = "pkg/config/menu.json"
-)
-
 type Menu struct {
 	Name   string `json:"name"`
 	Alias  string `json:"alias"`
@@ -59,26 +66,12 @@ type News struct {
 	Content      string `json:"content"`
 }
 
-func ReadJSON(result interface{}) error {
-	file, err := os.Open(MenuFile)
+func ReadJSON(file string, result interface{}) error {
+	file, err := os.Open(file)
 	if err != nil {
 		return err
 	}
 	defer file.Close()
 
 	return json.NewDecoder(file).Decode(result)
-}
-
-
-func main() {
-	http.HandleFunc("/", HomePage)
-	http.HandleFunc("/about", AboutPage)
-	http.HandleFunc("/contacts", ContactsPage)
-	http.HandleFunc("/news/", NewsList)
-	http.HandleFunc("/news/show/", NewsFull)
-
-	http.Handle("/favicon.ico", http.NotFoundHandler())
-
-	fmt.Println("Listen on port: 8080")
-	http.ListenAndServe(":8080", nil)
 }
