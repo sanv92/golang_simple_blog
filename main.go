@@ -13,45 +13,15 @@ var (
 	ErrTemplateDoesNotExist = errors.New("The template does not exist.")
 )
 
-var templates map[string]*template.Template
+var tpl = template.Must(template.ParseGlob("templates/*"))
 
-func init() {
-	if templates == nil {
-		templates = make(map[string]*template.Template)
-	}
-
-	templatesDir := "templates/"
-
-	tplHome     := []string{templatesDir + "home.tmpl", templatesDir + "base.tmpl"}
-	tplNewsList := []string{templatesDir + "news_list.tmpl", templatesDir + "base.tmpl"}
-	tplNewsFull := []string{templatesDir + "news_full.tmpl", templatesDir + "base.tmpl"}
-	tplAbout    := []string{templatesDir + "about.tmpl", templatesDir + "base.tmpl"}
-	tplContacts := []string{templatesDir + "contacts.tmpl", templatesDir + "base.tmpl"}
-
-	tplHome     = append(tplHome, templatesDir + "header.tmpl", templatesDir + "footer.tmpl")
-	tplNewsList = append(tplNewsList, templatesDir + "header.tmpl", templatesDir + "footer.tmpl")
-	tplNewsFull = append(tplNewsFull, templatesDir + "header.tmpl", templatesDir + "footer.tmpl")
-	tplAbout    = append(tplAbout, templatesDir + "header.tmpl", templatesDir + "footer.tmpl")
-	tplContacts = append(tplContacts, templatesDir + "header.tmpl", templatesDir + "footer.tmpl")
-
-	templates["home"]      = template.Must(template.ParseFiles(tplHome...))
-	templates["news_list"] = template.Must(template.ParseFiles(tplNewsList...))
-	templates["news_full"] = template.Must(template.ParseFiles(tplNewsFull...))
-	templates["about"]     = template.Must(template.ParseFiles(tplAbout...))
-	templates["contacts"]  = template.Must(template.ParseFiles(tplContacts...))
-
-	//templates["header"]      = template.Must(template.ParseFiles(templatesDir + "header.tmpl"))
-}
 
 type View string
 
 func (v View) Render(data interface{}, w http.ResponseWriter, r *http.Request) error {
-	tpl, ok := templates[string(v)]
-	if !ok {
+	if err := tpl.ExecuteTemplate(w, string(v) + ".tmpl", data); err != nil {
 		return ErrTemplateDoesNotExist
 	}
-
-	tpl.ExecuteTemplate(w, "base", data)
 
 	return nil
 }
@@ -61,7 +31,7 @@ func HomePage(w http.ResponseWriter, r *http.Request) {
 	//var menu []json.Menu
 	//ReadJSON(&menu)
 
-	View("home").Render(nil, w, r)
+	View("home").Render("1111", w, r)
 }
 
 func AboutPage(w http.ResponseWriter, r *http.Request) {
@@ -73,16 +43,15 @@ func ContactsPage(w http.ResponseWriter, r *http.Request) {
 }
 
 func NewsList(w http.ResponseWriter, r *http.Request) {
-	View("news_list").Render("lalal", w, r)
+	View("news_list").Render("2222", w, r)
 }
 
 func NewsFull(w http.ResponseWriter, r *http.Request) {
 	//newsID := strings.SplitN(req.URL.Path, "/", 4)[3]
 	//fmt.Fprint(w, string(newsID))
 
-	View("news_full").Render("lalal", w, r)
+	View("news_full").Render("4444", w, r)
 }
-
 
 const (
 	NewsFile = "pkg/config/news.json"

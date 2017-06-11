@@ -1,7 +1,14 @@
-{{template "base" .}}
+{{ template "header" . }}
 
-{{ define "content" }}
-----
-News List1
-----
-{{ end }}
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            ----
+            News List
+            ----
+            {{.}}
+        </div>
+    </div>
+</div>
+
+{{ template "footer" }}
