@@ -9,13 +9,6 @@ import (
 	"errors"
 )
 
-var (
-	ErrTemplateDoesNotExist = errors.New("The template does not exist.")
-)
-
-var tpl = template.Must(template.ParseGlob("templates/*"))
-
-
 func main() {
 	http.HandleFunc("/", HomePage)
 	http.HandleFunc("/about", AboutPage)
@@ -28,6 +21,12 @@ func main() {
 	fmt.Println("Listen on port: 8080")
 	http.ListenAndServe(":8080", nil)
 }
+
+var (
+	ErrTemplateDoesNotExist = errors.New("The template does not exist.")
+)
+
+var tpl = template.Must(template.ParseGlob("templates/*"))
 
 func HomePage(w http.ResponseWriter, r *http.Request) {
 	//var menu []json.Menu
@@ -66,8 +65,8 @@ type News struct {
 	Content      string `json:"content"`
 }
 
-func ReadJSON(file string, result interface{}) error {
-	file, err := os.Open(file)
+func ReadJSON(fileName string, result interface{}) error {
+	file, err := os.Open(fileName)
 	if err != nil {
 		return err
 	}
