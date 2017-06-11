@@ -8,6 +8,10 @@
     "alias": "/about"
   },
   {
+    "name" : "News",
+    "alias": "/news"
+  },
+  {
     "name" : "Contacts",
     "alias": "/contacts"
   }
