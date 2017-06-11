@@ -47,10 +47,15 @@ func NewsList(w http.ResponseWriter, r *http.Request) {
 	var news []News
 	ReadJSON("config/news.json", &news)
 
+	var menu []Menu
+	ReadJSON("config/menu.json", &menu)
+
 	data := struct {
 		News    []News
+		Menu    []Menu
 	}{
 		news,
+		menu,
 	}
 
 	tpl.ExecuteTemplate(w, "news_list.tmpl", data)
