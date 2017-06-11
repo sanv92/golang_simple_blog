@@ -7,13 +7,13 @@
             <h1>News List</h1>
 
             <ul>
-                {{ range .News }}
+                {{ range $index, $news := .News }}
                     <li>
-                        <a href="{{ .Alias }}">
-                            {{ .Title }}
+                        <a href="show/{{ $index }}">
+                            {{ $news.Title }}
                         </a>
                         <p>
-                            {{ .Description }}
+                            {{ $news.Description }}
                         </p>
                         <hr />
                     </li>

@@ -7,6 +7,8 @@ import (
 	"text/template"
 	"encoding/json"
 	"errors"
+	"strings"
+	"strconv"
 )
 
 func main() {
@@ -83,16 +85,24 @@ func NewsList(w http.ResponseWriter, r *http.Request) {
 }
 
 func NewsFull(w http.ResponseWriter, r *http.Request) {
-	//newsID := strings.SplitN(req.URL.Path, "/", 4)[3]
-	//fmt.Fprint(w, string(newsID))
+	newsName := strings.SplitN(r.URL.Path, "/", 4)[3]
+	num, err := strconv.Atoi(newsName)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	var news []News
+	ReadJSON("config/news.json", &news)
 
 	var menu []Menu
 	ReadJSON("config/menu.json", &menu)
 
 	data := struct {
 		Menu    []Menu
+		News    News
 	}{
 		menu,
+		news[num],
 	}
 	tpl.ExecuteTemplate(w, "news_full.tmpl", data)
 }
