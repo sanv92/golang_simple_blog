@@ -29,18 +29,39 @@ var (
 var tpl = template.Must(template.ParseGlob("templates/*"))
 
 func HomePage(w http.ResponseWriter, r *http.Request) {
-	//var menu []json.Menu
-	//ReadJSON(&menu)
+	var menu []Menu
+	ReadJSON("config/menu.json", &menu)
 
-	tpl.ExecuteTemplate(w, "home.tmpl", "11122")
+	data := struct {
+		Menu    []Menu
+	}{
+		menu,
+	}
+	tpl.ExecuteTemplate(w, "home.tmpl", data)
 }
 
 func AboutPage(w http.ResponseWriter, r *http.Request) {
-	tpl.ExecuteTemplate(w, "about.tmpl", nil)
+	var menu []Menu
+	ReadJSON("config/menu.json", &menu)
+
+	data := struct {
+		Menu    []Menu
+	}{
+		menu,
+	}
+	tpl.ExecuteTemplate(w, "about.tmpl", data)
 }
 
 func ContactsPage(w http.ResponseWriter, r *http.Request) {
-	tpl.ExecuteTemplate(w, "contacts.tmpl", nil)
+	var menu []Menu
+	ReadJSON("config/menu.json", &menu)
+
+	data := struct {
+		Menu    []Menu
+	}{
+		menu,
+	}
+	tpl.ExecuteTemplate(w, "contacts.tmpl", data)
 }
 
 func NewsList(w http.ResponseWriter, r *http.Request) {
@@ -65,7 +86,15 @@ func NewsFull(w http.ResponseWriter, r *http.Request) {
 	//newsID := strings.SplitN(req.URL.Path, "/", 4)[3]
 	//fmt.Fprint(w, string(newsID))
 
-	tpl.ExecuteTemplate(w, "news_full.tmpl", "44444")
+	var menu []Menu
+	ReadJSON("config/menu.json", &menu)
+
+	data := struct {
+		Menu    []Menu
+	}{
+		menu,
+	}
+	tpl.ExecuteTemplate(w, "news_full.tmpl", data)
 }
 
 type Menu struct {
