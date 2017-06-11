@@ -44,7 +44,16 @@ func ContactsPage(w http.ResponseWriter, r *http.Request) {
 }
 
 func NewsList(w http.ResponseWriter, r *http.Request) {
-	tpl.ExecuteTemplate(w, "news_list.tmpl", "2222")
+	var news []News
+	ReadJSON("config/news.json", &news)
+
+	data := struct {
+		News    []News
+	}{
+		news,
+	}
+
+	tpl.ExecuteTemplate(w, "news_list.tmpl", data)
 }
 
 func NewsFull(w http.ResponseWriter, r *http.Request) {
@@ -61,6 +70,7 @@ type Menu struct {
 
 type News struct {
 	Title        string `json:"title"`
+	Alias        string `json:"alias"`
 	Description  string `json:"description"`
 	Content      string `json:"content"`
 }

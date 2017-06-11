@@ -2,12 +2,26 @@
 
 <div class="container">
     <div class="row">
+
         <div class="col-md-12">
-            ----
-            News List
-            ----
-            {{.}}
+            <h1>News List</h1>
+
+            <ul>
+                {{ range .News }}
+                    <li>
+                        <a href="{{ .Alias }}">
+                            {{ .Title }}
+                        </a>
+                        <p>
+                            {{ .Description }}
+                        </p>
+                        <hr />
+                    </li>
+                {{ end }}
+            </ul>
+
         </div>
+
     </div>
 </div>
 
