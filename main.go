@@ -7,8 +7,9 @@ import (
 	"text/template"
 	"encoding/json"
 	"errors"
+	"math"
 	//"strings"
-	//"strconv"
+	"strconv"
 )
 
 func main() {
@@ -28,7 +29,14 @@ var (
 	ErrTemplateDoesNotExist = errors.New("The template does not exist.")
 )
 
-var tpl = template.Must(template.ParseGlob("templates/*"))
+var tpl = template.Must(template.New("test").Funcs(template.FuncMap{
+	"loop": func(n int) []struct{} {
+		return make([]struct{}, n)
+	},
+	"add": func(x, y int) int {
+		return x + y
+	},
+}).ParseGlob("templates/*"))
 
 func HomePage(w http.ResponseWriter, r *http.Request) {
 	var menu []Menu
@@ -67,18 +75,37 @@ func ContactsPage(w http.ResponseWriter, r *http.Request) {
 }
 
 func NewsList(w http.ResponseWriter, r *http.Request) {
+	queryPage  := r.URL.Query().Get("page")
+	if queryPage == "" {
+		queryPage = "1"
+	}
+	pageNum, _ := strconv.Atoi(queryPage)
+	PageLimit  := 3
+
 	var news []News
 	ReadJSON("config/news.json", &news)
 
 	var menu []Menu
 	ReadJSON("config/menu.json", &menu)
 
+	startPoint := ((pageNum * PageLimit) - 3)
+	if startPoint <= 0 {
+		startPoint = 0
+	}
+
+	endPoint   := pageNum * PageLimit
+	news_slice := news[startPoint:endPoint]
+
+	p := NewPagination(len(news), PageLimit, pageNum)
+
 	data := struct {
 		News    []News
 		Menu    []Menu
+		Pagination Pagination
 	}{
-		news,
+		news_slice,
 		menu,
+		*p,
 	}
 
 	tpl.ExecuteTemplate(w, "news_list.tmpl", data)
@@ -116,6 +143,33 @@ func NewsFull(w http.ResponseWriter, r *http.Request) {
 		foundNews,
 	}
 	tpl.ExecuteTemplate(w, "news_full.tmpl", data)
+}
+
+type Pagination struct {
+	PerPage     int
+	TotalAmount int
+	CurrentPage int
+	TotalPage   int
+}
+
+func NewPagination(totalAmount, perPage, currentPage int) *Pagination {
+	if currentPage == 0 {
+		currentPage = 1
+	}
+
+	n := int(math.Ceil(float64(totalAmount) / float64(perPage)))
+	if currentPage > n {
+		currentPage = n
+	}
+
+	totalPage := int(math.Ceil(float64(totalAmount) / float64(perPage)))
+
+	return &Pagination{
+		PerPage:     perPage,
+		TotalAmount: totalAmount,
+		CurrentPage: currentPage,
+		TotalPage:   totalPage,
+	}
 }
 
 type Menu struct {
