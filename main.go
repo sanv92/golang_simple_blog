@@ -52,9 +52,6 @@ func AboutPage(w http.ResponseWriter, r *http.Request) {
 }
 
 func ContactsPage(w http.ResponseWriter, r *http.Request) {
-	var menu []Menu
-	ReadJSON("config/menu.json", &menu)
-
 	tpl.ExecuteTemplate(w, "contacts.tmpl", nil)
 }
 
