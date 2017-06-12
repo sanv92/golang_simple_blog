@@ -7,14 +7,18 @@ import (
 	"text/template"
 	"encoding/json"
 	"errors"
-	//"math"
-	//"strings"
 	"strconv"
+	"log"
+	"io"
 )
 
 func main() {
-	pages := &PageServer{}
-	news := &NewsServer{}
+	renderer, err := NewRenderer("templates/*")
+	if err != nil {
+		log.Fatal(err)
+	}
+	pages := &PageServer{renderer}
+	news := &NewsServer{renderer}
 
 	http.HandleFunc("/", pages.Home)
 	http.HandleFunc("/about", pages.About)
@@ -33,37 +37,73 @@ var (
 	ErrTemplateDoesNotExist = errors.New("The template does not exist.")
 )
 
-var tpl = template.Must(template.New("test").Funcs(template.FuncMap{
-	"loop": func(n int) []struct{} {
-		return make([]struct{}, n)
-	},
-	"add": func(x, y int) int {
-		return x + y
-	},
-	"Menu": func() []Menu {
-		var menu []Menu
-		ReadJSON("config/menu.json", &menu)
-		return menu
-	},
-}).ParseGlob("templates/*"))
+func NewRenderer(templatespath string) (*PageRenderer, error) {
+	renderer := &PageRenderer{}
+	renderer.path = templatespath
+	return renderer, renderer.loadTemplates()
+}
+
+// PageRenderer ////////////////////////
+//
+type PageRenderer struct{
+	path      string
+	templates *template.Template
+}
+
+func (renderer *PageRenderer) loadTemplates() error {
+	var err error
+	renderer.templates, err = template.New("test").Funcs(renderer.funcs()).ParseGlob(renderer.path)
+	return err
+}
+
+func (renderer *PageRenderer) funcs() template.FuncMap {
+	return template.FuncMap{
+		"loop": func(n int) []struct{} {
+			return make([]struct{}, n)
+		},
+		"add": func(x, y int) int {
+			return x + y
+		},
+		"Menu": func() []Menu {
+			var menu []Menu
+			ReadJSON("config/menu.json", &menu)
+			return menu
+		},
+	}
+}
+
+func (renderer *PageRenderer) Render(w io.Writer, name string, data interface{}) error {
+	err := renderer.templates.ExecuteTemplate(w, name, data)
+	if err != nil {
+		log.Println(err)
+	}
+	return err
+}
 
 
-type PageServer struct{}
+// Page Server ////////////////////////
+//
+type PageServer struct{
+	*PageRenderer
+}
 
 func (server *PageServer) Home(w http.ResponseWriter, r *http.Request) {
-	tpl.ExecuteTemplate(w, "home.tmpl", nil)
+	server.Render(w, "home.tmpl", nil)
 }
 
 func (server *PageServer) About(w http.ResponseWriter, r *http.Request) {
-	tpl.ExecuteTemplate(w, "about.tmpl", nil)
+	server.Render(w, "about.tmpl", nil)
 }
 
 func (server *PageServer) Contacts(w http.ResponseWriter, r *http.Request) {
-	tpl.ExecuteTemplate(w, "contacts.tmpl", nil)
+	server.Render(w, "contacts.tmpl", nil)
 }
 
-
-type NewsServer struct{}
+// News Server ////////////////////////
+//
+type NewsServer struct{
+	*PageRenderer
+}
 
 func (server *NewsServer) List(w http.ResponseWriter, r *http.Request) {
 	queryPage  := r.URL.Query().Get("page")
@@ -94,7 +134,7 @@ func (server *NewsServer) List(w http.ResponseWriter, r *http.Request) {
 		*p,
 	}
 
-	tpl.ExecuteTemplate(w, "news_list.tmpl", data)
+	server.Render(w, "news_list.tmpl", data)
 }
 
 func (server *NewsServer) Full(w http.ResponseWriter, r *http.Request) {
@@ -123,10 +163,12 @@ func (server *NewsServer) Full(w http.ResponseWriter, r *http.Request) {
 	}{
 		foundNews,
 	}
-	tpl.ExecuteTemplate(w, "news_full.tmpl", data)
+	server.Render(w, "news_full.tmpl", data)
 }
 
 
+// Pagination ////////////////////////
+//
 type Pagination struct {
 	PerPage     int
 	TotalAmount int
