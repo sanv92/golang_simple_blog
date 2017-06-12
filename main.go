@@ -93,16 +93,19 @@ func NewsFull(w http.ResponseWriter, r *http.Request) {
 	var menu []Menu
 	ReadJSON("config/menu.json", &menu)
 
-	var found *News
+	flag := false
+	var found News
 	for _, item := range news {
 		if item.Alias == newsName {
-			found = &item
+			found = item
+			flag = true
 			break
 		}
 	}
 
-	if found == nil {
-		found = &News{Title: "Not Found 404"}
+	if !flag {
+		w.WriteHeader(http.StatusNotFound)
+		found = News{Title: "Not Found 404"}
 	}
 
 	data := struct {
@@ -110,7 +113,7 @@ func NewsFull(w http.ResponseWriter, r *http.Request) {
 		News    News
 	}{
 		menu,
-		*found,
+		found,
 	}
 	tpl.ExecuteTemplate(w, "news_full.tmpl", data)
 }
