@@ -7,17 +7,21 @@ import (
 	"text/template"
 	"encoding/json"
 	"errors"
-	"math"
+	//"math"
 	//"strings"
 	"strconv"
 )
 
 func main() {
-	http.HandleFunc("/", HomePage)
-	http.HandleFunc("/about", AboutPage)
-	http.HandleFunc("/contacts", ContactsPage)
-	http.HandleFunc("/news/", NewsList)
-	http.HandleFunc("/news/show/", NewsFull)
+	pages := &PageServer{}
+	news := &NewsServer{}
+
+	http.HandleFunc("/", pages.Home)
+	http.HandleFunc("/about", pages.About)
+	http.HandleFunc("/contacts", pages.Contacts)
+
+	http.HandleFunc("/news/", news.List)
+	http.HandleFunc("/news/show/", news.Full)
 
 	http.Handle("/favicon.ico", http.NotFoundHandler())
 
@@ -43,19 +47,25 @@ var tpl = template.Must(template.New("test").Funcs(template.FuncMap{
 	},
 }).ParseGlob("templates/*"))
 
-func HomePage(w http.ResponseWriter, r *http.Request) {
+
+type PageServer struct{}
+
+func (server *PageServer) Home(w http.ResponseWriter, r *http.Request) {
 	tpl.ExecuteTemplate(w, "home.tmpl", nil)
 }
 
-func AboutPage(w http.ResponseWriter, r *http.Request) {
+func (server *PageServer) About(w http.ResponseWriter, r *http.Request) {
 	tpl.ExecuteTemplate(w, "about.tmpl", nil)
 }
 
-func ContactsPage(w http.ResponseWriter, r *http.Request) {
+func (server *PageServer) Contacts(w http.ResponseWriter, r *http.Request) {
 	tpl.ExecuteTemplate(w, "contacts.tmpl", nil)
 }
 
-func NewsList(w http.ResponseWriter, r *http.Request) {
+
+type NewsServer struct{}
+
+func (server *NewsServer) List(w http.ResponseWriter, r *http.Request) {
 	queryPage  := r.URL.Query().Get("page")
 	if queryPage == "" {
 		queryPage = "1"
@@ -87,7 +97,7 @@ func NewsList(w http.ResponseWriter, r *http.Request) {
 	tpl.ExecuteTemplate(w, "news_list.tmpl", data)
 }
 
-func NewsFull(w http.ResponseWriter, r *http.Request) {
+func (server *NewsServer) Full(w http.ResponseWriter, r *http.Request) {
 	newsName := r.URL.Query().Get("id")
 
 	var news []News
@@ -116,6 +126,7 @@ func NewsFull(w http.ResponseWriter, r *http.Request) {
 	tpl.ExecuteTemplate(w, "news_full.tmpl", data)
 }
 
+
 type Pagination struct {
 	PerPage     int
 	TotalAmount int
@@ -128,18 +139,16 @@ func NewPagination(totalAmount, perPage, currentPage int) *Pagination {
 		currentPage = 1
 	}
 
-	n := int(math.Ceil(float64(totalAmount) / float64(perPage)))
+	n := (totalAmount + perPage - 1) / perPage
 	if currentPage > n {
 		currentPage = n
 	}
-
-	totalPage := int(math.Ceil(float64(totalAmount) / float64(perPage)))
 
 	return &Pagination{
 		PerPage:     perPage,
 		TotalAmount: totalAmount,
 		CurrentPage: currentPage,
-		TotalPage:   totalPage,
+		TotalPage:   n,
 	}
 }
 
