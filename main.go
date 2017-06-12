@@ -36,42 +36,26 @@ var tpl = template.Must(template.New("test").Funcs(template.FuncMap{
 	"add": func(x, y int) int {
 		return x + y
 	},
+	"Menu": func() []Menu {
+		var menu []Menu
+		ReadJSON("config/menu.json", &menu)
+		return menu
+	},
 }).ParseGlob("templates/*"))
 
 func HomePage(w http.ResponseWriter, r *http.Request) {
-	var menu []Menu
-	ReadJSON("config/menu.json", &menu)
-
-	data := struct {
-		Menu    []Menu
-	}{
-		menu,
-	}
-	tpl.ExecuteTemplate(w, "home.tmpl", data)
+	tpl.ExecuteTemplate(w, "home.tmpl", nil)
 }
 
 func AboutPage(w http.ResponseWriter, r *http.Request) {
-	var menu []Menu
-	ReadJSON("config/menu.json", &menu)
-
-	data := struct {
-		Menu    []Menu
-	}{
-		menu,
-	}
-	tpl.ExecuteTemplate(w, "about.tmpl", data)
+	tpl.ExecuteTemplate(w, "about.tmpl", nil)
 }
 
 func ContactsPage(w http.ResponseWriter, r *http.Request) {
 	var menu []Menu
 	ReadJSON("config/menu.json", &menu)
 
-	data := struct {
-		Menu    []Menu
-	}{
-		menu,
-	}
-	tpl.ExecuteTemplate(w, "contacts.tmpl", data)
+	tpl.ExecuteTemplate(w, "contacts.tmpl", nil)
 }
 
 func NewsList(w http.ResponseWriter, r *http.Request) {
@@ -85,9 +69,6 @@ func NewsList(w http.ResponseWriter, r *http.Request) {
 	var news []News
 	ReadJSON("config/news.json", &news)
 
-	var menu []Menu
-	ReadJSON("config/menu.json", &menu)
-
 	startPoint := ((pageNum * PageLimit) - 3)
 	if startPoint <= 0 {
 		startPoint = 0
@@ -100,11 +81,9 @@ func NewsList(w http.ResponseWriter, r *http.Request) {
 
 	data := struct {
 		News    []News
-		Menu    []Menu
 		Pagination Pagination
 	}{
 		news_slice,
-		menu,
 		*p,
 	}
 
@@ -116,9 +95,6 @@ func NewsFull(w http.ResponseWriter, r *http.Request) {
 
 	var news []News
 	ReadJSON("config/news.json", &news)
-
-	var menu []Menu
-	ReadJSON("config/menu.json", &menu)
 
 	found := false
 	var foundNews News
@@ -136,10 +112,8 @@ func NewsFull(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := struct {
-		Menu    []Menu
 		News    News
 	}{
-		menu,
 		foundNews,
 	}
 	tpl.ExecuteTemplate(w, "news_full.tmpl", data)
