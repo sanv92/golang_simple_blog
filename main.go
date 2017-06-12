@@ -105,7 +105,7 @@ func NewsFull(w http.ResponseWriter, r *http.Request) {
 
 	if !found {
 		w.WriteHeader(http.StatusNotFound)
-		found = News{Title: "Not Found 404"}
+		foundNews = News{Title: "Not Found 404"}
 	}
 
 	data := struct {
