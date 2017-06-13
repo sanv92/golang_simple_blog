@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"strconv"
 
-	. "blog2/app/site"
+	"blog2/app/site"
 )
 
 
@@ -16,7 +16,7 @@ type News struct {
 }
 
 type Server struct{
-	*PageRenderer
+	*site.Renderer
 }
 
 func (server *Server) List(w http.ResponseWriter, r *http.Request) {
@@ -28,7 +28,7 @@ func (server *Server) List(w http.ResponseWriter, r *http.Request) {
 	PageLimit  := 3
 
 	var news []News
-	ReadJSON("config/news.json", &news)
+	site.ReadJSON("config/news.json", &news)
 
 	startPoint := ((pageNum * PageLimit) - 3)
 	if startPoint <= 0 {
@@ -38,11 +38,11 @@ func (server *Server) List(w http.ResponseWriter, r *http.Request) {
 	endPoint   := pageNum * PageLimit
 	news_slice := news[startPoint:endPoint]
 
-	p := NewPagination(len(news), PageLimit, pageNum)
+	p := site.NewPagination(len(news), PageLimit, pageNum)
 
 	data := struct {
 		News    []News
-		Pagination Pagination
+		Pagination site.Pagination
 	}{
 		news_slice,
 		*p,
@@ -55,7 +55,7 @@ func (server *Server) Full(w http.ResponseWriter, r *http.Request) {
 	newsName := r.URL.Query().Get("id")
 
 	var news []News
-	ReadJSON("config/news.json", &news)
+	site.ReadJSON("config/news.json", &news)
 
 	found := false
 	var foundNews News

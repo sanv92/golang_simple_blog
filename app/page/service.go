@@ -3,12 +3,12 @@ package page
 import (
 	"net/http"
 
-	. "blog2/app/site"
+	"blog2/app/site"
 )
 
 
-type Server struct{
-	*PageRenderer
+type Server struct {
+	*site.Renderer
 }
 
 func (server *Server) Home(w http.ResponseWriter, r *http.Request) {
