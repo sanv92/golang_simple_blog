@@ -2,10 +2,10 @@ package main
 
 import (
 	"log"
-	"blog2/site"
-	"blog2/page"
-	"blog2/news"
-	"blog2/serve"
+	"golang_simple_blog/site"
+	"golang_simple_blog/page"
+	"golang_simple_blog/news"
+	"golang_simple_blog/serve"
 )
 
 const (

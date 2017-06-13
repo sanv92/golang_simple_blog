@@ -3,7 +3,7 @@ package page
 import (
 	"net/http"
 
-	"blog2/site"
+	"golang_simple_blog/site"
 )
 
 

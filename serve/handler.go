@@ -2,8 +2,8 @@ package serve
 
 import (
 	"net/http"
-	"blog2/page"
-	"blog2/news"
+	"golang_simple_blog/page"
+	"golang_simple_blog/news"
 )
 
 

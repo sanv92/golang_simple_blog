@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"blog2/site"
+	"golang_simple_blog/site"
 )
 
 
