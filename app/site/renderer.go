@@ -13,24 +13,24 @@ var (
 )
 
 
-type PageRenderer struct{
+type Renderer struct{
 	path      string
 	templates *template.Template
 }
 
-func NewRenderer(templatespath string) (*PageRenderer, error) {
-	renderer := &PageRenderer{}
+func NewRenderer(templatespath string) (*Renderer, error) {
+	renderer := &Renderer{}
 	renderer.path = templatespath
 	return renderer, renderer.loadTemplates()
 }
 
-func (renderer *PageRenderer) loadTemplates() error {
+func (renderer *Renderer) loadTemplates() error {
 	var err error
 	renderer.templates, err = template.New("test").Funcs(renderer.funcs()).ParseGlob(renderer.path)
 	return err
 }
 
-func (renderer *PageRenderer) funcs() template.FuncMap {
+func (renderer *Renderer) funcs() template.FuncMap {
 	return template.FuncMap{
 		"loop": func(n int) []struct{} {
 			return make([]struct{}, n)
@@ -46,7 +46,7 @@ func (renderer *PageRenderer) funcs() template.FuncMap {
 	}
 }
 
-func (renderer *PageRenderer) Render(w io.Writer, name string, data interface{}) error {
+func (renderer *Renderer) Render(w io.Writer, name string, data interface{}) error {
 	err := renderer.templates.ExecuteTemplate(w, name, data)
 	if err != nil {
 		log.Println(err)

@@ -5,13 +5,13 @@ import (
 	"net/http"
 	"log"
 
-	. "blog2/app/site"
+	"blog2/app/site"
 	"blog2/app/page"
 	"blog2/app/news"
 )
 
 func main() {
-	renderer, err := NewRenderer("templates/*")
+	renderer, err := site.NewRenderer("templates/*")
 	if err != nil {
 		log.Fatal(err)
 	}

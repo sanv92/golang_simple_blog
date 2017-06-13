@@ -1,7 +1,6 @@
 package site
 
-// Pagination ////////////////////////
-//
+
 type Pagination struct {
 	PerPage     int
 	TotalAmount int
