@@ -5,7 +5,6 @@ import (
 	"os"
 )
 
-
 func ReadJSON(fileName string, result interface{}) error {
 	file, err := os.Open(fileName)
 	if err != nil {
