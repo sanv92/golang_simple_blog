@@ -6,8 +6,8 @@ import (
 	"log"
 
 	. "blog2/app/site"
-	. "blog2/app/page"
-	. "blog2/app/news"
+	"blog2/app/page"
+	"blog2/app/news"
 )
 
 func main() {
@@ -15,8 +15,8 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	pages := &PageServer{renderer}
-	news  := &NewsServer{renderer}
+	pages := &page.Server{renderer}
+	news  := &news.Server{renderer}
 
 	http.HandleFunc("/", pages.Home)
 	http.HandleFunc("/about", pages.About)

@@ -1,4 +1,4 @@
-package page
+package news
 
 import (
 	"net/http"
@@ -8,9 +8,6 @@ import (
 )
 
 
-// News Server ////////////////////////
-//
-
 type News struct {
 	Title        string `json:"title"`
 	Alias        string `json:"alias"`
@@ -18,11 +15,11 @@ type News struct {
 	Content      string `json:"content"`
 }
 
-type NewsServer struct{
+type Server struct{
 	*PageRenderer
 }
 
-func (server *NewsServer) List(w http.ResponseWriter, r *http.Request) {
+func (server *Server) List(w http.ResponseWriter, r *http.Request) {
 	queryPage  := r.URL.Query().Get("page")
 	if queryPage == "" {
 		queryPage = "1"
@@ -54,7 +51,7 @@ func (server *NewsServer) List(w http.ResponseWriter, r *http.Request) {
 	server.Render(w, "news_list.tmpl", data)
 }
 
-func (server *NewsServer) Full(w http.ResponseWriter, r *http.Request) {
+func (server *Server) Full(w http.ResponseWriter, r *http.Request) {
 	newsName := r.URL.Query().Get("id")
 
 	var news []News

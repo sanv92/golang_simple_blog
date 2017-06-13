@@ -1,3 +1,3 @@
 // Single pages
 
-package page
+package news

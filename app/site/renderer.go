@@ -12,8 +12,7 @@ var (
 	ErrTemplateDoesNotExist = errors.New("The template does not exist.")
 )
 
-// PageRenderer ////////////////////////
-//
+
 type PageRenderer struct{
 	path      string
 	templates *template.Template
