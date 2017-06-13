@@ -3,7 +3,7 @@ package page
 import (
 	"net/http"
 
-	"blog2/app/site"
+	"blog2/site"
 )
 
 

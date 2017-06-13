@@ -1,13 +1,15 @@
 package main
 
 import (
-	"fmt"
-	"net/http"
 	"log"
+	"blog2/site"
+	"blog2/page"
+	"blog2/news"
+	"blog2/serve"
+)
 
-	"blog2/app/site"
-	"blog2/app/page"
-	"blog2/app/news"
+const (
+	defaultPort = "8080"
 )
 
 func main() {
@@ -15,19 +17,9 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	pages := &page.Server{renderer}
-	news  := &news.Server{renderer}
+	pages     := &page.Server{renderer}
+	lastNews  := &news.Server{renderer}
 
-	http.HandleFunc("/", pages.Home)
-	http.HandleFunc("/about", pages.About)
-	http.HandleFunc("/contacts", pages.Contacts)
-
-	http.HandleFunc("/news/", news.List)
-	http.HandleFunc("/news/show/", news.Full)
-
-	http.Handle("/favicon.ico", http.NotFoundHandler())
-
-	fmt.Println("Listen on port: 8080")
-	http.ListenAndServe(":8080", nil)
+	serve.Handler(pages, lastNews)
+	serve.Run(defaultPort)
 }
-
