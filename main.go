@@ -20,12 +20,8 @@ func main() {
 
 	mux := http.NewServeMux()
 
-	page  := &page.Server{renderer}
-	page.Register(mux)
+	(&page.Server{renderer}).Register(mux)
+	(&news.Server{renderer}).Register(mux)
 
-	news  := &news.Server{renderer}
-	news.Register(mux)
-
-
-	http.ListenAndServe(":8080", mux)
+	http.ListenAndServe(":" + defaultPort + "", mux)
 }
