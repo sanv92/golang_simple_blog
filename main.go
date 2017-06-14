@@ -2,10 +2,10 @@ package main
 
 import (
 	"log"
+	"net/http"
 	"golang_simple_blog/site"
 	"golang_simple_blog/page"
 	"golang_simple_blog/news"
-	"golang_simple_blog/serve"
 )
 
 const (
@@ -17,9 +17,15 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	pages     := &page.Server{renderer}
-	lastNews  := &news.Server{renderer}
 
-	serve.Handler(pages, lastNews)
-	serve.Run(defaultPort)
+	mux := http.NewServeMux()
+
+	page  := &page.Server{renderer}
+	page.Register(mux)
+
+	news  := &news.Server{renderer}
+	news.Register(mux)
+
+
+	http.ListenAndServe(":8080", mux)
 }
