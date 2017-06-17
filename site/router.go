@@ -3,7 +3,6 @@ package site
 import (
 	"net/http"
 	"sort"
-
 )
 
 type Route struct {
@@ -19,9 +18,11 @@ type Router struct {
 
 func (r *Router) RouterFunc(title string, weight int, route string, handler func(w http.ResponseWriter, r *http.Request)) {
 	r.HandleFunc(route, handler)
-	r.Routes = append(r.Routes, Route{title, weight, route})
+	if weight > 0 {
+		r.Routes = append(r.Routes, Route{title, weight, route})
 
-	sort.Slice(r.Routes, func(i, j int) bool {
-		return r.Routes[i].Weight < r.Routes[j].Weight
-	})
+		sort.Slice(r.Routes, func(i, j int) bool {
+			return r.Routes[i].Weight < r.Routes[j].Weight
+		})
+	}
 }
