@@ -5,9 +5,7 @@ import (
 	"golang_simple_blog/site"
 )
 
-func (server *Server) Register(mux *http.ServeMux, router *site.Router) {
-	//router.RouterFunc("About", 222, "/about")
-
-	mux.HandleFunc("/news/", server.List)
-	mux.HandleFunc("/news/show/", server.Full)
+func (server *Server) Register(router *site.Router) {
+	router.RouterFunc("News", 3, "/news/", http.HandlerFunc(server.List))
+	router.RouterFunc("NewsFull", -1, "/news/show/", http.HandlerFunc(server.Full))
 }

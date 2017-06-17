@@ -6,6 +6,7 @@ import (
 	"golang_simple_blog/site"
 	"golang_simple_blog/page"
 	//"golang_simple_blog/news"
+	"golang_simple_blog/news"
 )
 
 const (
@@ -22,10 +23,10 @@ func main() {
 		log.Fatal(err)
 	}
 
-	mux := http.NewServeMux()
+	//mux := http.NewServeMux()
 
-	(&page.Server{renderer}).Register(mux, &router)
-	//(&news.Server{renderer}).Register(mux, &router)
+	(&page.Server{renderer}).Register(&router)
+	(&news.Server{renderer}).Register(&router)
 
-	http.ListenAndServe(":" + defaultPort + "", mux)
+	http.ListenAndServe(":" + defaultPort + "", &router)
 }
