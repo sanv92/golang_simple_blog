@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"golang_simple_blog/site"
 	"golang_simple_blog/page"
-	"golang_simple_blog/news"
+	//"golang_simple_blog/news"
 )
 
 const (
@@ -13,15 +13,19 @@ const (
 )
 
 func main() {
-	renderer, err := site.NewRenderer("templates/*")
+	router := site.Router{}
+	renderer, err := site.NewRenderer(
+		"templates/*",
+		&router,
+	)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	mux := http.NewServeMux()
 
-	(&page.Server{renderer}).Register(mux)
-	(&news.Server{renderer}).Register(mux)
+	(&page.Server{renderer}).Register(mux, &router)
+	//(&news.Server{renderer}).Register(mux, &router)
 
 	http.ListenAndServe(":" + defaultPort + "", mux)
 }
