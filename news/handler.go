@@ -2,7 +2,7 @@ package news
 
 import (
 	"net/http"
-	"golang_simple_blog/site"
+	"github.com/SanderV1992/golang_simple_blog/site"
 )
 
 func (server *Server) Register(router *site.Router) {
