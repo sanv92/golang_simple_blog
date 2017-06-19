@@ -33,8 +33,7 @@ func (server *Server) List(w http.ResponseWriter, r *http.Request) {
 
 	news, count, err := server.Repo.findAll(page - 1, limit)
 	if err != nil {
-		w.WriteHeader(http.StatusNotFound)
-		server.Render(w, "404.tmpl", nil)
+		site.Abort(404, w, r)
 		return
 	}
 
@@ -55,8 +54,7 @@ func (server *Server) Full(w http.ResponseWriter, r *http.Request) {
 	alias := r.URL.Query().Get("id")
 	news, err := server.Repo.findByAlias(alias)
 	if err != nil {
-		w.WriteHeader(http.StatusNotFound)
-		server.Render(w, "404.tmpl", nil)
+		site.Abort(404, w, r)
 		return
 	}
 
@@ -67,3 +65,4 @@ func (server *Server) Full(w http.ResponseWriter, r *http.Request) {
 	}
 	server.Render(w, "news_full.tmpl", data)
 }
+

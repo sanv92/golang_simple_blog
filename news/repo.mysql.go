@@ -1,10 +1,15 @@
 package news
 
 import (
-	"fmt"
-
+	"errors"
 	"github.com/jmoiron/sqlx"
 )
+
+
+var (
+	ErrNotFound = errors.New("not found")
+)
+
 
 type RepoMysql struct {
 	DB *sqlx.DB
@@ -14,8 +19,10 @@ func (repo *RepoMysql) findAll(page, limit int) ([]News, int, error) {
 	news := []News{}
 	err := repo.DB.Select(&news, "SELECT * FROM news")
 	if err != nil {
-		fmt.Errorf("DB select news fail: %v", err)
+		return news, 0, ErrNotFound
 	}
+
+	len := len(news)
 
 	first := page * limit
 	if first < 0 {
@@ -23,18 +30,22 @@ func (repo *RepoMysql) findAll(page, limit int) ([]News, int, error) {
 	}
 
 	last := first + limit
-	if last > len(news) {
-		last = len(news)
+	if last > len {
+		last = len
 	}
 
-	return news[first:last], len(news), nil
+	if first > len {
+		return news, 0, ErrNotFound
+	}
+
+	return news[first:last], len, nil
 }
 
 func (repo *RepoMysql) findByAlias(alias string) (News, error) {
 	news := News{}
 	err := repo.DB.Get(&news, "SELECT * FROM news WHERE alias=?", alias)
 	if err != nil {
-		fmt.Errorf("DB select news fail: %v", err)
+		return news, ErrNotFound
 	}
 
 	return news, nil
