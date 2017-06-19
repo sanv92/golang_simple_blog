@@ -1,0 +1,26 @@
+version: '3'
+
+services:
+
+### DATABASES #############################
+  database_container:
+    image: "mariadb:latest"
+    container_name: database_container
+    volumes:
+      - ./.docker/database/:/var/lib/database/:rw
+    environment:
+      - MYSQL_DATABASE=homestead
+      - MYSQL_USER=homestead
+      - MYSQL_PASSWORD=secret
+      - MYSQL_ROOT_PASSWORD=root
+    ports:
+      - "3306:3306"
+    networks:
+      - dev_network
+
+###########################################
+### NETWORK #############################
+###########################################
+networks:
+  dev_network:
+    driver: bridge

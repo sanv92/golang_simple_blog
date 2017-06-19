@@ -2,49 +2,49 @@ package news
 
 import (
 	"net/http"
-	"strconv"
 
 	"github.com/SanderV1992/golang_simple_blog/site"
+	"strconv"
 )
 
 
 type News struct {
-	Title        string `json:"title"`
-	Alias        string `json:"alias"`
-	Description  string `json:"description"`
-	Content      string `json:"content"`
+	ID           int
+	Title        string `json:"title" db:"title"`
+	Alias        string `json:"alias" db:"alias"`
+	Description  string `json:"description" db:"description"`
+	Content      string `json:"content" db:"content"`
 }
 
-type Server struct{
+type Server struct {
 	*site.Renderer
+	Repo *RepoMysql
 }
 
 func (server *Server) List(w http.ResponseWriter, r *http.Request) {
 	queryPage  := r.URL.Query().Get("page")
-	if queryPage == "" {
-		queryPage = "1"
+
+	page, err := strconv.Atoi(queryPage)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		page = 1
 	}
-	pageNum, _ := strconv.Atoi(queryPage)
-	PageLimit  := 3
+	limit := 3
 
-	var news []News
-	site.ReadJSON("config/news.json", &news)
-
-	startPoint := ((pageNum * PageLimit) - 3)
-	if startPoint <= 0 {
-		startPoint = 0
+	news, count, err := server.Repo.findAll(page - 1, limit)
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		server.Render(w, "404.tmpl", nil)
+		return
 	}
 
-	endPoint   := pageNum * PageLimit
-	news_slice := news[startPoint:endPoint]
-
-	p := site.NewPagination(len(news), PageLimit, pageNum)
+	p := site.NewPagination(count, limit, page)
 
 	data := struct {
 		News    []News
 		Pagination site.Pagination
 	}{
-		news_slice,
+		news,
 		*p,
 	}
 
@@ -52,30 +52,18 @@ func (server *Server) List(w http.ResponseWriter, r *http.Request) {
 }
 
 func (server *Server) Full(w http.ResponseWriter, r *http.Request) {
-	newsName := r.URL.Query().Get("id")
-
-	var news []News
-	site.ReadJSON("config/news.json", &news)
-
-	found := false
-	var foundNews News
-	for _, item := range news {
-		if item.Alias == newsName {
-			foundNews = item
-			found = true
-			break
-		}
-	}
-
-	if !found {
+	alias := r.URL.Query().Get("id")
+	news, err := server.Repo.findByAlias(alias)
+	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
-		foundNews = News{Title: "Not Found 404"}
+		server.Render(w, "404.tmpl", nil)
+		return
 	}
 
 	data := struct {
 		News    News
 	}{
-		foundNews,
+		news,
 	}
 	server.Render(w, "news_full.tmpl", data)
 }
