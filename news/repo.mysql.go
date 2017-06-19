@@ -22,7 +22,7 @@ func (repo *RepoMysql) findAll(page, limit int) ([]News, int, error) {
 		return news, 0, ErrNotFound
 	}
 
-	len := len(news)
+	length := len(news)
 
 	first := page * limit
 	if first < 0 {
@@ -30,15 +30,15 @@ func (repo *RepoMysql) findAll(page, limit int) ([]News, int, error) {
 	}
 
 	last := first + limit
-	if last > len {
-		last = len
+	if last > length {
+		last = length
 	}
 
-	if first > len {
+	if first > length {
 		return news, 0, ErrNotFound
 	}
 
-	return news[first:last], len, nil
+	return news[first:last], length, nil
 }
 
 func (repo *RepoMysql) findByAlias(alias string) (News, error) {
