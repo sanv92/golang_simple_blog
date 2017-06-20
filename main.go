@@ -12,6 +12,7 @@ import (
 
 const (
 	defaultPort = "8080"
+	databaseType = "json"
 )
 
 func main() {
@@ -26,7 +27,13 @@ func main() {
 		log.Fatal(err)
 	}
 
-	newsRepo := &news.RepoMysql{DB}
+	var newsRepo news.Repo
+	switch databaseType {
+	case "mysql":
+		newsRepo = &news.RepoMysql{DB}
+	case "json":
+		newsRepo = &news.RepoJson{}
+	}
 
 	(&page.Server{renderer}).Register(&router)
 	(&news.Server{renderer, newsRepo}).Register(&router)

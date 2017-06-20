@@ -16,9 +16,14 @@ type News struct {
 	Content      string `json:"content" db:"content"`
 }
 
+type Repo interface {
+	findAll(page, limit int) ([]News, int, error)
+	findByAlias(alias string) (*News, error)
+}
+
 type Server struct {
 	*site.Renderer
-	Repo *RepoMysql
+	Repo Repo
 }
 
 func (server *Server) List(w http.ResponseWriter, r *http.Request) {
@@ -61,7 +66,7 @@ func (server *Server) Full(w http.ResponseWriter, r *http.Request) {
 	data := struct {
 		News    News
 	}{
-		news,
+		*news,
 	}
 	server.Render(w, "news_full.tmpl", data)
 }

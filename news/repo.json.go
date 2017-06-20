@@ -6,6 +6,7 @@ import (
 	"github.com/SanderV1992/golang_simple_blog/site"
 )
 
+
 type RepoJson struct {}
 
 func (repo *RepoJson) findAll(page, limit int) ([]News, int, error) {
