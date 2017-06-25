@@ -11,6 +11,8 @@ import (
 type Repo interface {
 	findAll(page, limit int) ([]News, int, error)
 	findByAlias(alias string) (*News, error)
+	addNew(r *http.Request) (bool)
+	editByAlias(r *http.Request, alias string)
 }
 
 type Server struct {
@@ -63,3 +65,26 @@ func (server *Server) Full(w http.ResponseWriter, r *http.Request) {
 	server.Render(w, "news_full.tmpl", data)
 }
 
+func (server *Server) Add(w http.ResponseWriter, r *http.Request) {
+	result := server.Repo.addNew(r)
+	server.Render(w, "news_add.tmpl", result)
+}
+
+func (server *Server) Edit(w http.ResponseWriter, r *http.Request) {
+	alias := r.URL.Query().Get("id")
+	server.Repo.editByAlias(r, alias)
+
+	news, err := server.Repo.findByAlias(alias)
+	if err != nil {
+		site.Abort(404, w, r)
+		return
+	}
+
+	data := struct {
+		News    News
+	}{
+		*news,
+	}
+
+	server.Render(w, "news_edit.tmpl", data)
+}

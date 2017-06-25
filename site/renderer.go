@@ -47,13 +47,6 @@ func (renderer *Renderer) funcs(router *Router) template.FuncMap {
 		"Menu": func() []Route {
 			return router.Routes
 		},
-		/*
-		"Menu": func() []Menu {
-			var menu []Menu
-			ReadJSON("config/menu.json", &menu)
-			return menu
-		},
-		*/
 	}
 }
 

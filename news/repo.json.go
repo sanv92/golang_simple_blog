@@ -2,6 +2,7 @@ package news
 
 import (
 	"errors"
+	"net/http"
 
 	"github.com/SanderV1992/golang_simple_blog/site"
 )
@@ -39,3 +40,7 @@ func (repo *RepoJson) findByAlias(alias string) (*News, error) {
 
 	return nil, errors.New("not found")
 }
+
+
+func (repo *RepoJson) addNew(r *http.Request) bool { return false }
+func (repo *RepoJson) editByAlias(r *http.Request, alias string) {}

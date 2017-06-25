@@ -1,0 +1,51 @@
+{{ template "header" . }}
+
+<div class="container">
+    <div class="row">
+
+        <div class="col-md-12">
+            <h1>
+                {{ .News.Title }}
+            </h1>
+
+            <form class="bs-example bs-example-form" data-example-id="simple-input-groups" method="POST">
+
+                <div class="input-group">
+                    <span class="input-group-addon">Title</span>
+                    <input class="form-control" type="text" name="title" value="{{ .News.Title }}">
+                </div>
+
+                <br/>
+
+                <div class="input-group">
+                    <span class="input-group-addon">Alias</span>
+                    <input class="form-control" type="text" name="alias" value="{{ .News.Alias }}">
+                </div>
+
+                <br/>
+
+                <div class="input-group">
+                    <span class="input-group-addon">Description</span>
+                    <input class="form-control" type="text" name="description" value="{{ .News.Description }}">
+                </div>
+
+                <br/>
+
+                <div class="input-group">
+                    <span class="input-group-addon">Content</span>
+                    <input class="form-control" type="text" name="content" value="{{ .News.Content }}">
+                </div>
+
+                <br/>
+
+                <input type="hidden" name="_method" value="PATCH" />
+                <button type="submit" class="btn btn-primary navbar-btn">Save</button>
+
+            </form>
+
+        </div>
+
+    </div>
+</div>
+
+{{ template "footer" }}

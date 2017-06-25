@@ -1,0 +1,78 @@
+package main
+
+import (
+	"fmt"
+)
+
+const (
+	TagDog = "Dog"
+	TagCat = "Cat"
+)
+
+type Dog struct{ Name string }
+
+func (dog *Dog) Say() string { return "bark" }
+
+type Cat struct{ Name string }
+
+func (cat *Cat) Say() string { return "meow" }
+
+type Animal struct {
+	tag string
+	dog Dog
+	cat Cat
+}
+
+func (i *Animal) Say() string {
+	switch i.tag {
+	case TagDog:
+		return i.dog.Say()
+	case TagCat:
+		return i.cat.Say()
+	default:
+		panic("interface nil")
+	}
+}
+func (i *Animal) AssignDog(dog Dog) {
+	i.tag = TagDog
+	i.dog = dog
+	i.cat = Cat{}
+}
+
+func (i *Animal) AssignCat(cat Cat) {
+	i.tag = TagCat
+	i.dog = Dog{}
+	i.cat = cat
+}
+
+func (i *Animal) AssertDog() (Dog, bool) {
+	if i.tag == TagDog {
+		return i.dog, true
+	}
+	return Dog{}, false
+}
+
+func (i *Animal) AssertCat() (Cat, bool) {
+	if i.tag == TagCat {
+		return i.cat, true
+	}
+	return Cat{}, false
+}
+
+func GoAnimal(animal Animal) {
+	if dog, ok := animal.AssertDog(); ok {
+		fmt.Println(dog.Name)
+		fmt.Println(dog.Say())
+	} else {
+		fmt.Println("NOT DOG")
+		fmt.Println(animal.Say())
+	}
+}
+
+func main() {
+	var animal Animal
+	animal.AssignDog(Dog{"Chap"})
+	GoAnimal(animal)
+	animal.AssignCat(Cat{"Mow"})
+	GoAnimal(animal)
+}

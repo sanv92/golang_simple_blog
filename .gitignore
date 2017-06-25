@@ -2,6 +2,7 @@
 /logs
 /data
 .env
+example.txt
 
 # OS generated files #
 ######################

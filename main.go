@@ -12,7 +12,7 @@ import (
 
 const (
 	defaultPort = "8080"
-	databaseType = "json"
+	databaseType = "mysql"
 )
 
 func main() {
