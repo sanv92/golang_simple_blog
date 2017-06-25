@@ -32,7 +32,7 @@ func main() {
 	case "mysql":
 		newsRepo = &news.RepoMysql{DB}
 	case "json":
-		newsRepo = &news.RepoJson{}
+		//newsRepo = &news.RepoJson{}
 	}
 
 	(&page.Server{renderer}).Register(&router)

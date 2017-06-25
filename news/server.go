@@ -11,8 +11,8 @@ import (
 type Repo interface {
 	findAll(page, limit int) ([]News, int, error)
 	findByAlias(alias string) (*News, error)
-	addNew(r *http.Request) (bool)
-	editByAlias(r *http.Request, alias string)
+	addNew(method string, data News) (bool)
+	editByAlias(ethod string, data News, alias string)
 }
 
 type Server struct {
@@ -66,14 +66,37 @@ func (server *Server) Full(w http.ResponseWriter, r *http.Request) {
 }
 
 func (server *Server) Add(w http.ResponseWriter, r *http.Request) {
-	result := server.Repo.addNew(r)
+	r.ParseForm()
+
+	values := &News{
+		Title: 		 r.FormValue("title"),
+		Alias: 		 r.FormValue("alias"),
+		Description: r.FormValue("description"),
+		Content: 	 r.FormValue("content"),
+	}
+
+	result := server.Repo.addNew(r.Method, *values)
+
 	server.Render(w, "news_add.tmpl", result)
 }
 
 func (server *Server) Edit(w http.ResponseWriter, r *http.Request) {
 	alias := r.URL.Query().Get("id")
-	server.Repo.editByAlias(r, alias)
 
+	// update
+	r.ParseForm()
+	method := r.FormValue("_method")
+
+	values := &News{
+		Title: 		 r.FormValue("title"),
+		Alias: 		 r.FormValue("alias"),
+		Description: r.FormValue("description"),
+		Content: 	 r.FormValue("content"),
+	}
+
+	server.Repo.editByAlias(method, *values, alias)
+
+	// select
 	news, err := server.Repo.findByAlias(alias)
 	if err != nil {
 		site.Abort(404, w, r)

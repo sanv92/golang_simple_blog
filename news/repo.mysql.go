@@ -53,23 +53,15 @@ func (repo *RepoMysql) findByAlias(alias string) (*News, error) {
 	return &news, nil
 }
 
-func (repo *RepoMysql) addNew(r *http.Request) bool {
+func (repo *RepoMysql) addNew(method string, data News) bool {
 	result := false
 
-	if r.Method  == http.MethodPost {
-		r.ParseForm()
-		m := &News{
-			Title: 		 r.FormValue("title"),
-			Alias: 		 r.FormValue("alias"),
-			Description: r.FormValue("description"),
-			Content: 	 r.FormValue("content"),
-		}
-
+	if method  == http.MethodPost {
 		tx, err := repo.DB.Begin()
 
 		_, err = tx.Exec(
 			"INSERT INTO news (title, alias, description, content) VALUES (?, ?, ?, ?)",
-			m.Title, m.Alias, m.Description, m.Content,
+			data.Title, data.Alias, data.Description, data.Content,
 		)
 
 		if err != nil {
@@ -83,23 +75,13 @@ func (repo *RepoMysql) addNew(r *http.Request) bool {
 	return result
 }
 
-func (repo *RepoMysql) editByAlias(r *http.Request, alias string) {
-	method := r.FormValue("_method")
-
+func (repo *RepoMysql) editByAlias(method string, data News, alias string) {
 	if method == http.MethodPatch {
-		r.ParseForm()
-		m := &News{
-			Title: 		 r.FormValue("title"),
-			Alias: 		 r.FormValue("alias"),
-			Description: r.FormValue("description"),
-			Content: 	 r.FormValue("content"),
-		}
-
 		tx, _ := repo.DB.Begin()
 
 		_, _ = tx.Exec(
 			"UPDATE news SET title=?, alias=?, description=?, content=? WHERE alias=? LIMIT 1",
-			m.Title, m.Alias, m.Description, m.Content, alias,
+			data.Title, data.Alias, data.Description, data.Content, alias,
 		)
 
 		tx.Commit()
