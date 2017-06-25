@@ -8,8 +8,8 @@ import (
 
 
 var (
-	ErrNotFound = errors.New("not found")
-	NoInserterFound = errors.New("No inserter found")
+	ErrNotFound = errors.New("Not found")
+	NotImplemented = errors.New("Not implemented")
 )
 
 type RepoMysql struct {
@@ -52,9 +52,7 @@ func (repo *RepoMysql) findByAlias(alias string) (*News, error) {
 	return &news, nil
 }
 
-func (repo *RepoMysql) create(data News) bool {
-	result := false
-
+func (repo *RepoMysql) create(data News) error {
 	tx, err := repo.DB.Begin()
 
 	_, err = tx.Exec(
@@ -63,13 +61,12 @@ func (repo *RepoMysql) create(data News) bool {
 	)
 
 	if err != nil {
-		result = false
+		return NotImplemented
 	}
 
 	tx.Commit()
-	result = true
 
-	return result
+	return nil
 }
 
 func (repo *RepoMysql) update(data News, alias string) {

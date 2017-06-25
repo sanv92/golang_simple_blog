@@ -5,13 +5,14 @@ import (
 
 	"github.com/SanderV1992/golang_simple_blog/site"
 	"strconv"
+	"fmt"
 )
 
 
 type Repo interface {
 	findAll(page, limit int) ([]News, int, error)
 	findByAlias(alias string) (*News, error)
-	create(data News) (bool)
+	create(data News) (error)
 	update(data News, alias string)
 }
 
@@ -78,7 +79,10 @@ func (server *Server) Add(w http.ResponseWriter, r *http.Request) {
 			Content:     r.FormValue("content"),
 		}
 
-		result = server.Repo.create(*values)
+		err := server.Repo.create(*values)
+		if err != nil {
+			site.Abort(404, w, r)
+		}
 	}
 
 	server.Render(w, "news_add.tmpl", result)
