@@ -11,8 +11,8 @@ import (
 type Repo interface {
 	findAll(page, limit int) ([]News, int, error)
 	findByAlias(alias string) (*News, error)
-	addNew(method string, data News) (bool)
-	editByAlias(ethod string, data News, alias string)
+	create(data News) (bool)
+	update(data News, alias string)
 }
 
 type Server struct {
@@ -66,16 +66,20 @@ func (server *Server) Full(w http.ResponseWriter, r *http.Request) {
 }
 
 func (server *Server) Add(w http.ResponseWriter, r *http.Request) {
-	r.ParseForm()
 
-	values := &News{
-		Title: 		 r.FormValue("title"),
-		Alias: 		 r.FormValue("alias"),
-		Description: r.FormValue("description"),
-		Content: 	 r.FormValue("content"),
+	var result bool
+	if r.Method  == http.MethodPost {
+		r.ParseForm()
+
+		values := &News{
+			Title:       r.FormValue("title"),
+			Alias:       r.FormValue("alias"),
+			Description: r.FormValue("description"),
+			Content:     r.FormValue("content"),
+		}
+
+		result = server.Repo.create(*values)
 	}
-
-	result := server.Repo.addNew(r.Method, *values)
 
 	server.Render(w, "news_add.tmpl", result)
 }
@@ -84,17 +88,19 @@ func (server *Server) Edit(w http.ResponseWriter, r *http.Request) {
 	alias := r.URL.Query().Get("id")
 
 	// update
-	r.ParseForm()
 	method := r.FormValue("_method")
+	if method == http.MethodPatch {
+		r.ParseForm()
 
-	values := &News{
-		Title: 		 r.FormValue("title"),
-		Alias: 		 r.FormValue("alias"),
-		Description: r.FormValue("description"),
-		Content: 	 r.FormValue("content"),
+		values := &News{
+			Title:       r.FormValue("title"),
+			Alias:       r.FormValue("alias"),
+			Description: r.FormValue("description"),
+			Content:     r.FormValue("content"),
+		}
+
+		server.Repo.update(*values, alias)
 	}
-
-	server.Repo.editByAlias(method, *values, alias)
 
 	// select
 	news, err := server.Repo.findByAlias(alias)

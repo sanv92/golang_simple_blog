@@ -2,7 +2,6 @@ package news
 
 import (
 	"errors"
-	"net/http"
 
 	"github.com/jmoiron/sqlx"
 )
@@ -53,37 +52,33 @@ func (repo *RepoMysql) findByAlias(alias string) (*News, error) {
 	return &news, nil
 }
 
-func (repo *RepoMysql) addNew(method string, data News) bool {
+func (repo *RepoMysql) create(data News) bool {
 	result := false
 
-	if method  == http.MethodPost {
-		tx, err := repo.DB.Begin()
+	tx, err := repo.DB.Begin()
 
-		_, err = tx.Exec(
-			"INSERT INTO news (title, alias, description, content) VALUES (?, ?, ?, ?)",
-			data.Title, data.Alias, data.Description, data.Content,
-		)
+	_, err = tx.Exec(
+		"INSERT INTO news (title, alias, description, content) VALUES (?, ?, ?, ?)",
+		data.Title, data.Alias, data.Description, data.Content,
+	)
 
-		if err != nil {
-			result = false
-		}
-
-		tx.Commit()
-		result = true
+	if err != nil {
+		result = false
 	}
+
+	tx.Commit()
+	result = true
 
 	return result
 }
 
-func (repo *RepoMysql) editByAlias(method string, data News, alias string) {
-	if method == http.MethodPatch {
-		tx, _ := repo.DB.Begin()
+func (repo *RepoMysql) update(data News, alias string) {
+	tx, _ := repo.DB.Begin()
 
-		_, _ = tx.Exec(
-			"UPDATE news SET title=?, alias=?, description=?, content=? WHERE alias=? LIMIT 1",
-			data.Title, data.Alias, data.Description, data.Content, alias,
-		)
+	_, _ = tx.Exec(
+		"UPDATE news SET title=?, alias=?, description=?, content=? WHERE alias=? LIMIT 1",
+		data.Title, data.Alias, data.Description, data.Content, alias,
+	)
 
-		tx.Commit()
-	}
+	tx.Commit()
 }
