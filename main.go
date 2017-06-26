@@ -39,5 +39,5 @@ func main() {
 	(&page.Server{renderer}).Register(&router)
 	(&news.Server{renderer, newsRepo}).Register(&router)
 
-	http.ListenAndServe(":" + defaultPort, &router)
+	http.ListenAndServe(":"+defaultPort, &router)
 }

@@ -1,8 +1,8 @@
 package news
 
 import (
-	"log"
 	"errors"
+	"log"
 
 	"github.com/jmoiron/sqlx"
 )

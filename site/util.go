@@ -1,8 +1,8 @@
 package site
 
 import (
-	"log"
 	"encoding/json"
+	"log"
 	"os"
 )
 
@@ -11,7 +11,7 @@ func ReadJSON(fileName string, result interface{}) error {
 	if err != nil {
 		return err
 	}
-	defer func(){
+	defer func() {
 		if err := file.Close(); err != nil {
 			log.Println(err)
 		}
