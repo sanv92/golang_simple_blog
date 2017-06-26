@@ -1,6 +1,6 @@
 package site
 
 type Menu struct {
-	Name   string `json:"name"`
-	Alias  string `json:"alias"`
+	Name  string `json:"name"`
+	Alias string `json:"alias"`
 }

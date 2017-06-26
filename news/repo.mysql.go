@@ -1,14 +1,14 @@
 package news
 
 import (
+	"log"
 	"errors"
 
 	"github.com/jmoiron/sqlx"
 )
 
-
 var (
-	ErrNotFound = errors.New("Not found")
+	ErrNotFound    = errors.New("Not found")
 	NotImplemented = errors.New("Not implemented")
 )
 
@@ -64,7 +64,9 @@ func (repo *RepoMysql) create(data News) error {
 		return NotImplemented
 	}
 
-	tx.Commit()
+	if err := tx.Commit(); err != nil {
+		log.Println(err)
+	}
 
 	return nil
 }
@@ -77,5 +79,7 @@ func (repo *RepoMysql) update(data News, alias string) {
 		data.Title, data.Alias, data.Description, data.Content, alias,
 	)
 
-	tx.Commit()
+	if err := tx.Commit(); err != nil {
+		log.Println(err)
+	}
 }

@@ -3,16 +3,15 @@ package news
 import (
 	"net/http"
 
-	"github.com/SanderV1992/golang_simple_blog/site"
 	"strconv"
-	"fmt"
-)
 
+	"github.com/SanderV1992/golang_simple_blog/site"
+)
 
 type Repo interface {
 	findAll(page, limit int) ([]News, int, error)
 	findByAlias(alias string) (*News, error)
-	create(data News) (error)
+	create(data News) error
 	update(data News, alias string)
 }
 
@@ -22,7 +21,7 @@ type Server struct {
 }
 
 func (server *Server) List(w http.ResponseWriter, r *http.Request) {
-	queryPage  := r.URL.Query().Get("page")
+	queryPage := r.URL.Query().Get("page")
 
 	page, err := strconv.Atoi(queryPage)
 	if err != nil {
@@ -31,7 +30,7 @@ func (server *Server) List(w http.ResponseWriter, r *http.Request) {
 	}
 	limit := 3
 
-	news, count, err := server.Repo.findAll(page - 1, limit)
+	news, count, err := server.Repo.findAll(page-1, limit)
 	if err != nil {
 		site.Abort(404, w, r)
 		return
@@ -40,7 +39,7 @@ func (server *Server) List(w http.ResponseWriter, r *http.Request) {
 	p := site.NewPagination(count, limit, page)
 
 	data := struct {
-		News    []News
+		News       []News
 		Pagination site.Pagination
 	}{
 		news,
@@ -59,7 +58,7 @@ func (server *Server) Full(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := struct {
-		News    News
+		News News
 	}{
 		*news,
 	}
@@ -69,8 +68,11 @@ func (server *Server) Full(w http.ResponseWriter, r *http.Request) {
 func (server *Server) Add(w http.ResponseWriter, r *http.Request) {
 
 	var result bool
-	if r.Method  == http.MethodPost {
-		r.ParseForm()
+	if r.Method == http.MethodPost {
+		if err := r.ParseForm(); err != nil {
+			site.Abort(404, w, r)
+			return
+		}
 
 		values := &News{
 			Title:       r.FormValue("title"),
@@ -79,8 +81,7 @@ func (server *Server) Add(w http.ResponseWriter, r *http.Request) {
 			Content:     r.FormValue("content"),
 		}
 
-		err := server.Repo.create(*values)
-		if err != nil {
+		if err := server.Repo.create(*values); err != nil {
 			site.Abort(404, w, r)
 		}
 	}
@@ -94,7 +95,10 @@ func (server *Server) Edit(w http.ResponseWriter, r *http.Request) {
 	// update
 	method := r.FormValue("_method")
 	if method == http.MethodPatch {
-		r.ParseForm()
+		if err := r.ParseForm(); err != nil {
+			site.Abort(404, w, r)
+			return
+		}
 
 		values := &News{
 			Title:       r.FormValue("title"),
@@ -114,7 +118,7 @@ func (server *Server) Edit(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := struct {
-		News    News
+		News News
 	}{
 		*news,
 	}

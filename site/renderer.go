@@ -1,17 +1,15 @@
 package site
 
 import (
-	"text/template"
-	"log"
-	"io"
 	"errors"
+	"io"
+	"log"
+	"text/template"
 )
-
 
 var (
 	ErrTemplateDoesNotExist = errors.New("The template does not exist.")
 )
-
 
 type Renderer struct {
 	path      string
@@ -19,7 +17,7 @@ type Renderer struct {
 }
 
 func NewRenderer(templatespath string, router *Router) (*Renderer, error) {
-	renderer     := &Renderer{}
+	renderer := &Renderer{}
 	renderer.path = templatespath
 
 	return renderer, renderer.loadTemplates(
@@ -50,10 +48,9 @@ func (renderer *Renderer) funcs(router *Router) template.FuncMap {
 	}
 }
 
-func (renderer *Renderer) Render(w io.Writer, name string, data interface{}) error {
+func (renderer *Renderer) Render(w io.Writer, name string, data interface{}) {
 	err := renderer.templates.ExecuteTemplate(w, name, data)
 	if err != nil {
 		log.Println(err)
 	}
-	return err
 }

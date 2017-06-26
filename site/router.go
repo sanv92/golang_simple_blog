@@ -6,9 +6,9 @@ import (
 )
 
 type Route struct {
-	Title string
+	Title  string
 	Weight int
-	Path string
+	Path   string
 }
 
 type Router struct {
