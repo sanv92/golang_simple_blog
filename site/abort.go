@@ -16,6 +16,4 @@ func Abort(status int, w http.ResponseWriter, r *http.Request) {
 	case 302:
 		//
 	}
-
-	return
 }
