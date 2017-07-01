@@ -16,7 +16,7 @@ type RepoMysql struct {
 	DB *sqlx.DB
 }
 
-func (repo *RepoMysql) findAll(page, limit int) ([]News, int, error) {
+func (repo *RepoMysql) FindAll(page, limit int) ([]News, int, error) {
 	news := []News{}
 	err := repo.DB.Select(&news, "SELECT * FROM news")
 	if err != nil {
@@ -42,7 +42,7 @@ func (repo *RepoMysql) findAll(page, limit int) ([]News, int, error) {
 	return news[first:last], length, nil
 }
 
-func (repo *RepoMysql) findByAlias(alias string) (*News, error) {
+func (repo *RepoMysql) FindByAlias(alias string) (*News, error) {
 	news := News{}
 	err := repo.DB.Get(&news, "SELECT * FROM news WHERE alias=?", alias)
 	if err != nil {

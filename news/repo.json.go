@@ -8,7 +8,7 @@ import (
 
 type RepoJson struct{}
 
-func (repo *RepoJson) findAll(page, limit int) ([]News, int, error) {
+func (repo *RepoJson) FindAll(page, limit int) ([]News, int, error) {
 	// ning siin kasutada repo.DB.Exec
 	var news []News
 	if err := site.ReadJSON("config/news.json", &news); err != nil {
@@ -28,7 +28,7 @@ func (repo *RepoJson) findAll(page, limit int) ([]News, int, error) {
 	return news[first:last], len(news), nil
 }
 
-func (repo *RepoJson) findByAlias(alias string) (*News, error) {
+func (repo *RepoJson) FindByAlias(alias string) (*News, error) {
 	var news []News
 	if err := site.ReadJSON("config/news.json", &news); err != nil {
 		return nil, errors.New("not found")

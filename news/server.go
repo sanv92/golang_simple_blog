@@ -9,8 +9,8 @@ import (
 )
 
 type Repo interface {
-	findAll(page, limit int) ([]News, int, error)
-	findByAlias(alias string) (*News, error)
+	FindAll(page, limit int) ([]News, int, error)
+	FindByAlias(alias string) (*News, error)
 	create(data News) error
 	update(data News, alias string)
 }
@@ -30,7 +30,7 @@ func (server *Server) List(w http.ResponseWriter, r *http.Request) {
 	}
 	limit := 3
 
-	news, count, err := server.Repo.findAll(page-1, limit)
+	news, count, err := server.Repo.FindAll(page-1, limit)
 	if err != nil {
 		site.Abort(404, w, r)
 		return
@@ -51,7 +51,7 @@ func (server *Server) List(w http.ResponseWriter, r *http.Request) {
 
 func (server *Server) Full(w http.ResponseWriter, r *http.Request) {
 	alias := r.URL.Query().Get("id")
-	news, err := server.Repo.findByAlias(alias)
+	news, err := server.Repo.FindByAlias(alias)
 	if err != nil {
 		site.Abort(404, w, r)
 		return
@@ -111,7 +111,7 @@ func (server *Server) Edit(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// select
-	news, err := server.Repo.findByAlias(alias)
+	news, err := server.Repo.FindByAlias(alias)
 	if err != nil {
 		site.Abort(404, w, r)
 		return
